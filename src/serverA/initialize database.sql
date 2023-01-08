@@ -65,8 +65,16 @@ use class2022data;
 drop table if exists results;
 create table if not exists results
 (
-    s1 varchar(20),
+    categoryName varchar(20),
+    detailName VARCHAR(20),
     vMax float,
     vMin float,
-    vAvg float
+    vAvg float,
+    PRIMARY KEY (categoryName,detailName)
 );
+
+# 查询
+SELECT MAX(noise) FROM noise; # 查询噪声最大值
+SELECT COUNT(noise) FROM noise WHERE noise>3; # 查询噪声值大于3的记录数目
+SELECT * from noise where noise=(SELECT MAX(noise) FROM noise);
+

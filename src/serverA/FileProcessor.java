@@ -179,7 +179,6 @@ public class FileProcessor extends Thread {
         dataSaver.start();
         //等待两个进程结束
         dataSaver.join();
-
     }
 
 }

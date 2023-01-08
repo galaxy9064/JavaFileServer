@@ -21,7 +21,9 @@ public class StartB {
             threadServerB.join();//等待线程执行完毕（循环执行：如果isAlive，则等待）
 
             // 从数据库C查询数据，启动线程
-            // TODO
+            Thread ds=new DataStatistics();
+            ds.start();
+            ds.join();
 
         }
 
