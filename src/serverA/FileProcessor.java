@@ -3,7 +3,6 @@ package serverA;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -61,10 +60,11 @@ public class FileProcessor extends Thread {
         //休眠一段时间后再开始检查
         while (true) {
             try {
+                System.out.println("\nServerA 主线程启动,开始处理...");
                 sleep(5000);//合适的设置，每600,000ms执行一次
                 //调用本类中的方法detectFile()
                 this.detectFiles();
-                this.classifyFiles();
+                this.processFiles();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -93,16 +93,15 @@ public class FileProcessor extends Thread {
                     " [FileProcessor.detectFiles..WARN]: 目录下没有检查到文件,等待下次定时任务...");
             return;// 没有检查到文件,返回空列表
         }
-        System.out.print(new Date(System.currentTimeMillis()) +
+        System.out.println(new Date(System.currentTimeMillis()) +
                 " [FileProcessor.detectFiles.INFO]: 检查到文件或目录：");
 //        System.out.println(Arrays.toString(fileNameList));
 
 //        return; //'return' is unnecessary as the last statement in a 'void' method
     }
 
-    public void classifyFiles() throws InterruptedException {
+    public void processFiles() throws InterruptedException {
         // 将识别到的文件保存到列表中
-//        knownFilesInfoList = new ArrayList<>();
         knownFilesNameList = new ArrayList<>();
         knownFilesPathList = new ArrayList<>();
         knownFilesSuffixList = new ArrayList<>();
@@ -121,7 +120,7 @@ public class FileProcessor extends Thread {
             File file = new File(filePath);
             //1.判断file是否是文件
             if (file.isFile()) {
-                System.out.printf("%s [ServerA.INFO]: 文件<%s>分类中: ", new Date(System.currentTimeMillis()), fileName);
+                System.out.printf("%s [ServerA.INFO]: <%s>分类: ", new Date(System.currentTimeMillis()), fileName);
                 String[] nameSegArray = fileName.split("[.]");
 //                // 显示文件名按"."分割后的结果
 //                for (String nameSeg : nameSegArray) {
@@ -142,43 +141,47 @@ public class FileProcessor extends Thread {
                         knownFilesSuffixList.add(fileSuffix);
                         knownFilesCategoryList.add(fileCategory);
                     } else{
-                        System.out.println(" Unknown file type!\n");
+                        System.out.println(" Unknown file type!");
                     }
                 }
             }
         }
-        System.out.println("[ServerA.INFO] Classified file amount:" + knownFilesCategoryList.size());
+        System.out.println("[ServerA.INFO] Recognized files:" + knownFilesCategoryList.size());
         for (int index=0;index<knownFilesCategoryList.size();index++) {
             switch (knownFilesCategoryList.get(index)) {
                 case 1:
                     //识别到数据文件，更新数据文件列表
-                    System.out.println("Data file, add to data files List!");
+//                    System.out.println("Data file, add to data files List!");
                     this.dataFilesNameList.add(knownFilesNameList.get(index));
                     this.dataFilesPathList.add(knownFilesPathList.get(index));
                     this.dataFilesSuffixList.add(knownFilesSuffixList.get(index));
-
                     break;
                 case 2:
                     //识别到媒体文件，更新媒体文件列表
-                    System.out.println("Media file, add to media file list!");
+//                    System.out.println("Media file, add to media file list!");
                     String fileName=knownFilesNameList.get(index);
                     String filePath=knownFilesPathList.get(index);
                     this.mediaFilesNameList.add(fileName);
                     this.mediaFilesPathList.add(filePath);
                     this.mediaFilesSuffixList.add(knownFilesSuffixList.get(index));
-
                     break;
             }
         }
-        //启动向服务器B发送文件的线程
+        System.out.println("data file: "+dataFilesPathList.size()+", media file: "+mediaFilesPathList.size());
+
+        //启动线程:向服务器B发送文件的
         Thread mediaTcpClient = new MediaTcpClient(mediaFilesPathList);
         mediaTcpClient.start();
         mediaTcpClient.join();
-        //启动向数据库C录入数据的线程
+        //启动线程:向数据库C录入数据的
         Thread dataSaver = new DataSaver(dataFilesPathList);
         dataSaver.start();
         //等待两个进程结束
         dataSaver.join();
+
+
     }
+
+
 
 }

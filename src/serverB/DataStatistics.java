@@ -9,7 +9,7 @@ import java.util.Date;
  * @Author: XYF
  * @User: XYF
  * @Date: 2023/1/8 13:33
- * @Content: 从数据库C查询数据，并保存在数据库C的统计结果表中
+ * @Content: 服务器B从数据库C查询数据，并保存在数据库C的统计结果表中
  */
 public class DataStatistics extends Thread{
     private static final String DB_URL = "jdbc:mysql://localhost:3306";

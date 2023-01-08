@@ -58,6 +58,8 @@ public class DataSaver extends Thread {
         } catch (IOException eIO) {
             System.out.println(new Date(System.currentTimeMillis()) + " [DataSaver.run.IOException] " + eIO);
         }
+        //数据存储完成，删除数据文件
+        new FileDeleter(filePathList).deleteFiles();
     }
 
     public void sendToSql() throws SQLException, IOException {
@@ -217,7 +219,6 @@ public class DataSaver extends Thread {
 
     /**
      * 发送噪声数据到数据库
-     *
      * @param filePath 文件列表
      * @throws SQLException sql异常
      * @throws IOException  io异常
@@ -259,29 +260,6 @@ public class DataSaver extends Thread {
         c.close();
         brNoise.close();
     }
-
-//    public void sendNoiseData(String[] oneData) throws SQLException {
-//        String staCode = oneData[1];
-//        String strDate = oneData[2];
-//        String noiseValue = oneData[0];
-//        DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-//        Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-//        PreparedStatement ps;
-//        //切换到数据库class2022data
-//        ps = conn.prepareStatement("USE class2022data;");
-//        ps.execute();
-//        //noise插入数据
-////        ps = conn.prepareStatement("INSERT INTO noise VALUES ('11074',STR_TO_DATE('21/12/2022','%d/%m/%Y'),2.921410959) ON DUPLICATE KEY UPDATE noise=VALUES (noise);");
-//        ps = conn.prepareStatement(
-//                "INSERT INTO noise VALUE ('" + staCode + "',STR_TO_DATE('" + strDate + "','%d/%m/%Y')," + noiseValue + ") ON DUPLICATE KEY UPDATE noise=VALUES (noise);"
-//        );
-//        //datetime FORMAT???如何设置？？？202301060030
-//        int i = ps.executeUpdate();
-//        System.out.println("insert into noise returns: " + i);
-//
-//        ps.close();
-//        conn.close();
-//    }
 
 
     /**
@@ -356,42 +334,6 @@ public class DataSaver extends Thread {
         brWeather.close();
     }
 
-//    public void sendWeatherData(String[] oneData) throws SQLException {
-//        String staCode = oneData[0];
-//        String province = oneData[1];
-//        String city = oneData[2];
-//        String temperature = oneData[3];
-//        String pressure = oneData[4];
-//        String humidity = oneData[5];
-//        String rain = oneData[6];
-//        String longitude = oneData[7];
-//        String latitude = oneData[8];
-//        String datetime = oneData[9];
-//
-//        DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-//        Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-//        PreparedStatement ps;
-//        //切换到数据库class2022data
-//        ps = conn.prepareStatement("USE class2022data;");
-//        ps.execute();
-//        //向wstation表插入数据
-//        ps = conn.prepareStatement(
-////                "INSERT INTO wstation VALUE (54195,'吉林','汪清',129.792,43.297) ON DUPLICATE  KEY UPDATE province=VALUES(province),city=VALUES(city),longitude=VALUES(longitude),latitude=VALUES(latitude);"
-//                "INSERT INTO wstation VALUE (" + staCode + ",'" + province + "','" + city + "'," + longitude + "," + latitude + ") " +
-//                        "ON DUPLICATE KEY UPDATE province=VALUES(province),city=VALUES(city),longitude=VALUES(longitude),latitude=VALUES(latitude);"
-//        );
-//        ps.executeUpdate();
-//        //向weather表插入数据
-//        ps = conn.prepareStatement(
-////                "INSERT INTO weather VALUE ('54195',str_to_date('29/11/2022 00:00:00','%d/%m/%Y %H:%i:%s'),8.6,625,7,0) ON DUPLICATE  KEY UPDATE datetime=VALUES(datetime),temperature=VALUES(temperature),pressure=VALUES(pressure),humidity=VALUES(humidity),rain=VALUES(rain);"
-//                "INSERT INTO weather VALUE ('" + staCode + "',str_to_date('" + datetime + "','%d/%m/%Y %H:%i:%s')," + temperature + "," + pressure + "," + humidity + "," + rain + ") ON DUPLICATE  KEY UPDATE datetime=VALUES(datetime),temperature=VALUES(temperature),pressure=VALUES(pressure),humidity=VALUES(humidity),rain=VALUES(rain);"
-//
-//        );
-//        ps.executeUpdate();
-//        //关闭SQL连接
-//        ps.close();
-//        conn.close();
-//    }
 
     /**
      * 发送重力数据到数据库
@@ -457,35 +399,3 @@ public class DataSaver extends Thread {
     }
 
 }
-
-//    public void sendGravityData(String[] staInfo, String[] oneData) throws SQLException {
-//        //待插入的数据
-//        String staCode = staInfo[1];
-//        String staName = staInfo[2];
-//        //时间 "年-月-日 时:分:秒"
-//        String datatime = oneData[0] + "-" + oneData[1] + "-" + oneData[2] + " " + oneData[3] + ":" + oneData[4] + ":" + oneData[5];
-//        float gravityValue = Float.parseFloat(oneData[6]);
-//
-//        DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-//        Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-//        PreparedStatement ps;
-//        //切换到数据库class2022data
-//        ps = conn.prepareStatement("USE class2022data;");
-//        ps.execute();
-//        //向gstation中插入数据
-////        ps=conn.prepareStatement("insert into gstation value ('42002','武汉九峰')");
-//        ps = conn.prepareStatement("insert into gstation value (?,?) on duplicate key update staName=values(staName);");
-//        ps.setString(1, staCode);
-//        ps.setString(2, staName);
-//        ps.executeUpdate();
-//        //向gravity表中插入数据
-////        ps=conn.prepareStatement("insert into gravity value ('42002',str_to_date('2022-12-03 23:59:00','%Y-%m-%d %H:%i:%s'),'100.1111')");
-//        ps = conn.prepareStatement("insert into gravity value (?,str_to_date(?,'%Y-%m-%d %H:%i:%s'),?) on duplicate key update gravity=values(gravity)");
-//        ps.setString(1, staCode);
-//        ps.setString(2, datatime);
-//        ps.setDouble(3, gravityValue);
-//        ps.executeUpdate();
-//
-//    }
-//
-//}

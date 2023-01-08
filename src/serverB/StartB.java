@@ -18,7 +18,7 @@ public class StartB {
             //接收服务器A发送的文件，启动线程
             Thread threadServerB= new MediaTcpServer();
             threadServerB.start();//启动线程，（文件接收服务）
-            threadServerB.join();//等待线程执行完毕（循环执行：如果isAlive，则等待）
+//            threadServerB.join();//等待线程执行完毕（循环执行：如果isAlive，则等待）
 
             // 从数据库C查询数据，启动线程
             Thread ds=new DataStatistics();

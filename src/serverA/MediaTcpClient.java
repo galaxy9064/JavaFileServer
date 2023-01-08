@@ -35,9 +35,25 @@ public class MediaTcpClient extends Thread {
         this.filePathList = filePathList;
     }
 
+    @Override
+    public void run() {
+        //如果filePathList为空则结束线程，如果不为空则发送文件
+        if (filePathList.size()>0) {
+            try {
+                //运行sendFiles()方法
+                sendFiles();
+                // 删除发送过的文件
+                new FileDeleter(filePathList).deleteFiles();
+            } catch (IOException e) {
+                System.out.println(new Date(System.currentTimeMillis()) + " [MediaTcpClient.run.ERROR] " + e);
+//            e.printStackTrace();
+            }
+        }
+    }
+
     private void sendFiles() throws IOException {
 
-        // 客户端思路：先告诉serverA有几个文件，再逐个发送
+        // 客户端思路：先告诉serverB有几个文件，再逐个发送
         // 1.创建Socket对象，连接服务器端（ServerB）
         socketA = new Socket(InetAddress.getLocalHost(), 8888);
         System.out.println("[ServerA.INFO] Connected to ServerB, ready to upload.");
@@ -78,7 +94,6 @@ public class MediaTcpClient extends Thread {
             System.out.println(new Date(System.currentTimeMillis()) + " [ServerA.INFO] File content sent!");
             // 3.接收ServerB信息（预留）
 
-
             // 4.关闭资源
             bwA0.close();
             bwA.close();
@@ -86,17 +101,10 @@ public class MediaTcpClient extends Thread {
             bosA.close();
             socketA.close();
 
+
+
         }
     }
 
-    @Override
-    public void run() {
-        //运行sendFiles()方法
-        try {
-            sendFiles();
-        } catch (IOException e) {
-            System.out.println(new Date(System.currentTimeMillis()) + " [MediaTcpClient.run.ERROR] " + e);
-//            e.printStackTrace();
-        }
-    }
+
 }
